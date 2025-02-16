@@ -1,0 +1,42 @@
+[
+  {
+    "item_name": "t-shirt",
+    "price": 80
+  },
+  {
+    "item_name": "cup",
+    "price": 20
+  },
+  {
+    "item_name": "book",
+    "price": 50
+  },
+  {
+    "item_name": "pen",
+    "price": 10
+  },
+  {
+    "item_name": "powerbank",
+    "price": 200
+  },
+  {
+    "item_name": "hoody",
+    "price": 300
+  },
+  {
+    "item_name": "umbrella",
+    "price": 200
+  },
+  {
+    "item_name": "socks",
+    "price": 10
+  },
+  {
+    "item_name": "wallet",
+    "price": 50
+  },
+  {
+    "item_name": "pink-hoody",
+    "price": 500
+  }
+]

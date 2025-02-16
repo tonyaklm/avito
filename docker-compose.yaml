@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  avito-shop-service:
+    build: ./
+    container_name: avito-shop-service
+    ports:
+      - ${SERVER_PORT:?}:${SERVER_PORT:?}
+    environment:
+      - DATABASE_PORT=${DATABASE_PORT:?}
+      - DATABASE_USER=${DATABASE_USER:?}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:?}
+      - DATABASE_NAME=${DATABASE_NAME:?}
+      - DATABASE_HOST=${DATABASE_HOST:?}
+      - SERVER_PORT=${SERVER_PORT:?}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:${SERVER_PORT:?}/api/healthcheck
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - internal
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    hostname: ${DATABASE_HOST:?}
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:?}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?}
+      POSTGRES_DB: ${DATABASE_NAME:?}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+#      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - ${DATABASE_PORT:?}:${DATABASE_PORT:?}
+    healthcheck:
+      test: pg_isready -U ${DATABASE_USER:?} -d ${DATABASE_PASSWORD:?} -h ${DATABASE_HOST:?} -p ${DATABASE_PORT:?}
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+
+  avito_pgadmin4:
+    container_name: avito_pgadmin4
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - internal
+    
+networks:
+  internal:
+
+volumes:
+  postgres_data:
+  pgadmin-data:
